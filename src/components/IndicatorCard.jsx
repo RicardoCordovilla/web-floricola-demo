@@ -5,9 +5,11 @@ import { WiHumidity } from 'react-icons/wi';
 import Gauge from './Gauge';
 
 
-const IndicatorCard = ({ type, value, status, min, max, update, station }) => {
+const IndicatorCard = ({ type, value, status, min, max, payload }) => {
+    console.log(min, max, value)
 
-    useEffect(() => { }, [update, station])
+
+    useEffect(() => { }, [payload])
 
     return (
         <div className="indicatorCard">
@@ -52,10 +54,12 @@ const IndicatorCard = ({ type, value, status, min, max, update, station }) => {
                     min={min}
                     max={max}
                     value={value}
-                    update={update}
-                    station={station}
+                    payload={payload}
                 />
-
+                <div className="indicatorCard_footer_labels">
+                    <span>{min}</span>
+                    <span>{max}</span>
+                </div>
             </div>
 
         </div>

@@ -47,13 +47,12 @@ const StationCard = ({ info }) => {
 
     useEffect(() => {
         getItemInfo()
-        const interval = setInterval(() => getItemInfo(), 1000);
-        return () => clearInterval(interval);
     }, [])
+
 
     return (
         <div className='stationCard'
-            onClick={() => itemInfo && navigate('/' + info?.title)}
+            onClick={() => itemInfo && navigate('/' + itemInfo?.stationtitle)}
         >
 
             <div className="stationCard_header">
@@ -67,36 +66,40 @@ const StationCard = ({ info }) => {
 
                 <div className="stationCard_header_line">
                     <span className='stationCard_header_line_infoLabel'><FaTemperatureLow /></span>
-                    <span className='stationCard_header_line_infoText'>{itemInfo ? itemInfo?.values?.T + '°C' : 'sin datos'}</span>
+                    <span className='stationCard_header_line_infoText'>{itemInfo ? itemInfo?.temp + '°C' : 'sin datos'}</span>
                 </div>
                 <div className="stationCard_header_line">
                     <span className='stationCard_header_line_infoLabel'><WiHumidity /></span>
-                    <span className='stationCard_header_line_infoText'>{itemInfo ? itemInfo?.values?.H + '%' : 'sin datos'}</span>
+                    <span className='stationCard_header_line_infoText'>{itemInfo ? itemInfo?.hum + '%' : 'sin datos'}</span>
                 </div>
             </div>
 
 
 
             <div className="bodyStationCard">
+                {/* <div className="bodyStationCardLine">
+                    <span className="bodyStationCard_label">Hora: </span>
+                    <span className="bodyStationCard_text">{formatTime(info?.createdAt)}</span>
+                </div> */}
                 <div className="bodyStationCardLine">
                     <span className="bodyStationCard_label">Id: </span>
                     <span className="bodyStationCard_text">{info?.alias}</span>
                 </div>
                 <div className="bodyStationCardLine">
                     <span className="bodyStationCard_label">Flor: </span>
-                    <span className="bodyStationCard_text">Explorer</span>
+                    <span className="bodyStationCard_text">{info.flowername}</span>
                 </div>
-                <div className="bodyStationCardLine">
+                {/* <div className="bodyStationCardLine">
                     <span className="bodyStationCard_label">Bloque: </span>
                     <span className="bodyStationCard_text">1</span>
-                </div>
-                <div className="bodyStationCardLine">
+                </div> */}
+                {/* <div className="bodyStationCardLine">
                     <span className="bodyStationCard_label">Nave: </span>
                     <span className="bodyStationCard_text">1</span>
-                </div>
+                </div> */}
                 <div className="bodyStationCardLine">
                     <span className="bodyStationCard_label">Camas: </span>
-                    <span className="bodyStationCard_text">1-12</span>
+                    <span className="bodyStationCard_text">{info?.beds}</span>
                 </div>
             </div>
 

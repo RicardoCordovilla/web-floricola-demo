@@ -9,12 +9,18 @@ import { BiHome } from 'react-icons/bi';
 import { PiMicrosoftExcelLogo } from 'react-icons/pi';
 import IndicatorCard from './IndicatorCard'
 import SideNavBar from './SideNavBar'
+import useMqtt from '../hooks/useMqtt'
+import { signal } from '@preact/signals-react'
 
 
 const ChartStation = () => {
+
+    const cont = signal(0)
+
     const { station } = useParams()
     console.log(station)
     const navigate = useNavigate()
+
 
     const digits = (num) => {
         let digit = num < 10 ? '0' + num : num + ''
@@ -50,16 +56,17 @@ const ChartStation = () => {
     const [allRegisters, setAllRegisters] = useState([])
     const [csv, setCsv] = useState([])
     const [data, setData] = useState()
-    const [update, setUpdate] = useState(0)
     const [download, setDownload] = useState(false)
     const [fetching, setFetching] = useState(false)
     const [from, setFrom] = useState(formatDate(new Date()))
     const [to, setTo] = useState(formatDate(new Date()))
+    const [rangeType, setRangeType] = useState('day')
+
+    const { mqttSubscribe, isConnected, payload } = useMqtt();
+    const [notificationList, setNotificationList] = useState([]);
 
 
-
-    const getItemInfo = () => {
-        // if (station?.title) {
+    const getLastInfo = () => {
         let url = config.db.baseurl + 'registers/' + station + '/last'
         console.log(url)
         axios.get(url)
@@ -68,7 +75,6 @@ const ChartStation = () => {
                 setItemInfo(response.data)
             })
             .catch(err => console.log(err))
-        // }
     }
 
 
@@ -85,10 +91,8 @@ const ChartStation = () => {
     }
 
 
-    const getRegistersRange = (from, toDate) => {
+    const getRegistersRange = (from, to) => {
         console.log(from)
-        console.log(formatDate1(toDate))
-        let to = formatDate1(toDate)
         let url = config.db.baseurl + 'registers/' + station + '/date?'
             + 'from=' + from
             + '&to=' + to
@@ -98,6 +102,8 @@ const ChartStation = () => {
             .then(response => {
                 console.log(response.data)
                 setRegisters(response.data)
+                setRangeType(response.data[0].type)
+                console.log(response.data[0].type)
                 setFetching(false)
             })
             .catch(err => console.log(err.data))
@@ -116,12 +122,30 @@ const ChartStation = () => {
             .catch(err => console.log(err.data))
     }
 
+    const handleFromTo = (e, type) => {
+        console.log(e, type)
+        switch (type) {
+            case 'from':
+                setFrom(e)
+                break;
+            case 'to':
+                setTo(e)
+                break;
+            default:
+                break;
+        }
+
+        from !== to &&
+            getRegistersRange(from, to)
+
+    }
+
     const formatData = (data) => {
-        let dataformat = data?.map((reg, index) => ({ date: formatDate(reg.createdAt), time: formatTime(reg.createdAt), t: reg.values.T, h: reg.values.H }))
+        let dataformat = data?.map((reg, index) => ({ date: formatDate(reg.date), time: formatTime(reg.createdAt), t: reg.temp, h: reg.hum }))
         return dataformat
     }
     const formatCsv = (data) => {
-        let csvformat = data?.map((reg, index) => ({ device: station, fecha: formatDate(reg.createdAt), hora: formatTime(reg.createdAt), t: reg.values.T, h: reg.values.H }))
+        let csvformat = data?.map((reg, index) => ({ device: station, fecha: formatDate(reg.date), hora: formatTime(reg.createdAt), t: reg.temp, h: reg.hum }))
         return csvformat
     }
 
@@ -130,24 +154,11 @@ const ChartStation = () => {
         getStation()
     }, [station])
 
-    useEffect(() => {
-
-
-        const interval = setInterval(() => {
-            setUpdate(update => update + 1)
-            getItemInfo()
-        }, 1000);
-        return () => clearInterval(interval);
-
-
-    }, [])
-
 
     useEffect(() => {
-        console.log(update)
         getRegistersRange(from, to)
-
-    }, [update, station])
+        getLastInfo()
+    }, [payload])
 
     useEffect(() => {
         console.log(from)
@@ -164,6 +175,34 @@ const ChartStation = () => {
     }, [allRegisters])
 
 
+    useEffect(() => {
+        if (isConnected) {
+            mqttSubscribe('miracleF01/devices');
+        }
+    }, [isConnected]);
+
+    useEffect(() => {
+        if (payload.message
+            && ['miracleF01/devices'].includes(payload.topic)
+        ) {
+            // const newMessage = JSON.parse(payload.message);
+            const newMessage = payload.message;
+            console.log(newMessage)
+            // const jsplit = newMessage.split('|')
+            // // { "station": "ESP1", "values": { "H": 74.2, "T": 25.5 }, "createdAt": new Date() }
+            // const createdAt = new Date()
+            // console.log(createdAt)
+            // const jsonObj = { station: "ESP1", values: { H: jsplit[0], T: jsplit[1] }, createdAt: new Date() }
+            // // setItemInfo(jsonObj)
+            // // console.log(jsonObj)
+            // // setRegisters([...registers, jsonObj])
+            // // const notif = [...notificationList, newMessage]
+            // // setNotificationList(notif)
+            // // new Notification(newMessage.content);
+            // // postData(JSON.parse(jsonObj))
+
+        }
+    }, [payload]);
 
 
     return (
@@ -171,48 +210,66 @@ const ChartStation = () => {
 
             <SideNavBar />
 
-            <div className="navContainer">
+            <div className="navBarContainer">
+                <div className="navBarContainer_header">
 
-                <button
-                    className='navButton'
-                    onClick={() => navigate('/')}
-                    disabled={download && fetching}
-                > <BiHome />Inicio</button>
+                    <button
+                        className='navButton'
+                        onClick={() => navigate('/')}
+                        disabled={download && fetching}
+                    > <BiHome />Inicio</button>
 
-                {/* <button
+                    {/* <button
                 className='HomeButton'
                 onClick={() => getRegistersRange(from, to)}
                 disabled={download && fetching}
             >Actualizar</button> */}
 
-                <h1 className='chartTitle'>{stationInfo?.alias}</h1>
+                    <h1 className='chartTitle'>{stationInfo?.alias}</h1>
 
 
-                {!allRegisters.length > 0 &&
-                    <button
-                        className='navButton'
-                        onClick={() => getAllRegisters()}
-                        disabled={download && fetching}
-                    >Obtener todos los datos <PiMicrosoftExcelLogo /></button>
-                }
-                {allRegisters.length > 0 &&
-                    <ExportToExcel
-                        apiData={csv}
-                        fileName={`${station}`}
-                        station={station}
-                        setDownload={setDownload}
-                        fetching={fetching}
-                    />
+                    {!allRegisters.length > 0 &&
+                        <button
+                            className='navButton'
+                            onClick={() => getAllRegisters()}
+                            disabled={download && fetching}
+                        >Obtener todos los datos <PiMicrosoftExcelLogo /></button>
+                    }
+                    {allRegisters.length > 0 &&
+                        <ExportToExcel
+                            apiData={csv}
+                            fileName={`${station}`}
+                            station={station}
+                            setDownload={setDownload}
+                            fetching={fetching}
+                        />
 
-                    // <CSVLink
-                    //     className='downLoadBtn'
-                    //     data={csv}
-                    //     filename={`${station}.csv`}
-                    // // headers={headers}
-                    // >
-                    //     Descargar CSV
-                    // </CSVLink>
-                }
+                        // <CSVLink
+                        //     className='downLoadBtn'
+                        //     data={csv}
+                        //     filename={`${station}.csv`}
+                        // // headers={headers}
+                        // >
+                        //     Descargar CSV
+                        // </CSVLink>
+                    }
+
+                </div>
+
+                <div className="navBarContainer_body">
+                    <div className="">
+                        <span className="bodyStationCard_label">Id: </span>
+                        <span className="bodyStationCard_text">{stationInfo?.title}</span>
+                    </div>
+                    <div className="">
+                        <span className="bodyStationCard_label">Camas: </span>
+                        <span className="bodyStationCard_text">{stationInfo?.beds}</span>
+                    </div>
+                    <div className="">
+                        <span className="bodyStationCard_label">Flor: </span>
+                        <span className="bodyStationCard_text">{stationInfo?.flowername}</span>
+                    </div>
+                </div>
 
             </div>
 
@@ -222,33 +279,40 @@ const ChartStation = () => {
                     <label htmlFor="">Desde:</label>
                     <input type="date"
                         value={from}
-                        onChange={(e) => setFrom(e.target.value)}
+                        onChange={(e) => handleFromTo(e.target.value, 'from')}
                     />
                 </div>
                 <div className="dateField">
                     <label htmlFor="">Hasta:</label>
                     <input type="date"
                         value={to}
-                        onChange={(e) => setTo(e.target.value)}
+                        onChange={(e) => handleFromTo(e.target.value, 'to')}
                     />
                 </div>
+
+                {/* <button onClick={() => cont.value++} >hola: {cont}</button> */}
+
             </div>
 
             <div className="indicatorsContainer">
 
                 <IndicatorCard
                     type={'temp'}
-                    value={itemInfo?.values.T}
+                    value={itemInfo ? itemInfo?.temp : 0}
                     status={1}
-                    min={0} max={100}
-                    update={update}
+                    min={stationInfo?.tempRange.min}
+                    max={stationInfo?.tempRange.max}
+                    payload={payload}
+                    stationInfo={stationInfo}
                 />
                 <IndicatorCard
                     type={'hum'}
-                    value={itemInfo?.values.H}
+                    value={itemInfo ? itemInfo?.hum : 0}
                     status={1}
-                    min={0} max={100}
-                    update={update}
+                    min={stationInfo?.humRange.min}
+                    max={stationInfo?.humRange.max}
+                    payload={payload}
+                    stationInfo={stationInfo}
                 />
 
             </div>
@@ -267,7 +331,7 @@ const ChartStation = () => {
                             animationDuration={500}
                         />
                         <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                        <XAxis dataKey="time" />
+                        <XAxis dataKey={rangeType === 'hour' ? 'time' : 'date'} />
                         <YAxis dataKey={"t"} />
                         <Tooltip animationDuration={200}
                             itemStyle={options}
@@ -288,7 +352,7 @@ const ChartStation = () => {
                             animationDuration={500}
                         />
                         <CartesianGrid stroke="#ccc" strokeDasharray="10 10" />
-                        <XAxis dataKey="time" />
+                        <XAxis dataKey={rangeType === 'hour' ? 'time' : 'date'} />
                         <YAxis dataKey={"h"} />
                         <Tooltip animationDuration={200}
                             itemStyle={options}
