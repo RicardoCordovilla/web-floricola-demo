@@ -188,7 +188,7 @@ const ChartStation = () => {
             // const newMessage = JSON.parse(payload.message);
             const newMessage = payload.message;
             console.log(newMessage)
-            alert('new date')
+            // alert('new date')
             // const jsplit = newMessage.split('|')
             // // { "station": "ESP1", "values": { "H": 74.2, "T": 25.5 }, "createdAt": new Date() }
             // const createdAt = new Date()
