@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import mqtt from 'mqtt';
 
 const setting = {
-   url: 'ws://broker.emqx.io:8083/mqtt',
+   url: 'wss://broker.emqx.io:8084/mqtt',
    config: {
        username: '',
        password: '',
-       port: 8083
+       port: 8084
    }
 }
 
