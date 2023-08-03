@@ -44,11 +44,12 @@ const StationCard = ({ info }) => {
         }
     }
 
-
     useEffect(() => {
         getItemInfo()
     }, [])
 
+
+    
 
     return (
         <div className='stationCard'

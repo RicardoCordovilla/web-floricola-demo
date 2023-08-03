@@ -11,6 +11,7 @@ import IndicatorCard from './IndicatorCard'
 import SideNavBar from './SideNavBar'
 import useMqtt from '../hooks/useMqtt'
 import { signal } from '@preact/signals-react'
+import { BsFillGearFill } from 'react-icons/bs'
 
 
 const ChartStation = () => {
@@ -30,11 +31,6 @@ const ChartStation = () => {
     const formatDate = (date) => {
         const fecha = new Date(date)
         let stringDate = fecha.getFullYear() + '-' + digits(fecha.getMonth() + 1) + '-' + digits(fecha.getDate())
-        return stringDate
-    }
-    const formatDate1 = (date) => {
-        const fecha = new Date(date)
-        let stringDate = fecha.getFullYear() + '-' + digits(fecha.getMonth() + 1) + '-' + digits(fecha.getDate() + 2)
         return stringDate
     }
 
@@ -141,11 +137,11 @@ const ChartStation = () => {
     }
 
     const formatData = (data) => {
-        let dataformat = data?.map((reg, index) => ({ date: formatDate(reg.date), time: formatTime(reg.createdAt), t: reg.temp, h: reg.hum }))
+        let dataformat = data?.map((reg, index) => ({ date: reg.date, time: reg.time, t: reg.temp, h: reg.hum }))
         return dataformat
     }
     const formatCsv = (data) => {
-        let csvformat = data?.map((reg, index) => ({ device: station, fecha: formatDate(reg.date), hora: formatTime(reg.createdAt), t: reg.temp, h: reg.hum }))
+        let csvformat = data?.map((reg, index) => ({ device: station, fecha: reg.date, hora: reg.time, t: reg.temp, h: reg.hum }))
         return csvformat
     }
 
@@ -254,6 +250,10 @@ const ChartStation = () => {
                         //     Descargar CSV
                         // </CSVLink>
                     }
+
+                    <BsFillGearFill
+
+                        fontSize={'2rem'} />
 
                 </div>
 
