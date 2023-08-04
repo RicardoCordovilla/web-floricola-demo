@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { BiHome } from 'react-icons/bi';
 import { TbPhotoSensor3 } from 'react-icons/tb';
-import { BsLayoutTextSidebar, BsDeviceSsd } from 'react-icons/bs';
+import { BsLayoutTextSidebar, BsDeviceSsd, BsFillGearFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router';
 
 
@@ -13,21 +13,26 @@ const SideNavBar = () => {
 
     const [hover, setHover] = useState(false)
 
-    const handleNavigate = (e) => {
+    const handleNavigate = (e, r) => {
         navigate(e)
-        window.location.reload()
+        r && window.location.reload()
 
     }
 
     return (
         <div className='sidenavbar'
-            onMouseMove={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
         >
-            {!hover && <BsLayoutTextSidebar
-                className='sidenavbar_headericon'
-                fontSize={'2rem'}
-            />}
+            {!hover &&
+                <div className="sideBar_iconBox"
+                    onClick={() => setHover(true)}
+                >
+                    <BsLayoutTextSidebar
+                        className='sidenavbar_headericon'
+                        fontSize={'2rem'}
+                    />
+                </div>
+            }
 
             {
                 hover &&
@@ -37,6 +42,7 @@ const SideNavBar = () => {
                         <BsLayoutTextSidebar
                             className='sidenavbar_headericon'
                             fontSize={'2rem'}
+                            onClick={() => setHover(!hover)}
                         />
 
                         <span className="sidenavbar_devicesContainer_hederText">
@@ -48,7 +54,7 @@ const SideNavBar = () => {
 
                     <div
                         className="sidenavbar_devicesContainer_deviceBox"
-                        onClick={() => handleNavigate('/ESP1')}
+                        onClick={() => handleNavigate('/ESP1', true)}
                     >
 
                         <TbPhotoSensor3 />
@@ -57,7 +63,7 @@ const SideNavBar = () => {
 
                     <div
                         className="sidenavbar_devicesContainer_deviceBox"
-                        onClick={() => handleNavigate('/ESP2')}
+                        onClick={() => handleNavigate('/ESP2', true)}
                     >
 
                         <TbPhotoSensor3 />
@@ -75,6 +81,11 @@ const SideNavBar = () => {
                 </div>
             }
 
+            <div className="sideBar_iconBox"
+                onClick={() => handleNavigate('/config', false)}
+            >
+                <BsFillGearFill fontSize={'2rem'} />
+            </div>
         </div>
     )
 }

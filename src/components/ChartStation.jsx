@@ -12,6 +12,9 @@ import SideNavBar from './SideNavBar'
 import useMqtt from '../hooks/useMqtt'
 import { signal } from '@preact/signals-react'
 import { BsFillGearFill } from 'react-icons/bs'
+import { MdNotificationsActive } from 'react-icons/md'
+import NotificationsHeader from './NotificationsHeader'
+
 
 
 const ChartStation = () => {
@@ -60,6 +63,8 @@ const ChartStation = () => {
 
     const { mqttSubscribe, isConnected, payload } = useMqtt();
     const [notificationList, setNotificationList] = useState([]);
+
+    const [hideNotifications, setHideNotifications] = useState(false)
 
 
     const getLastInfo = () => {
@@ -203,7 +208,9 @@ const ChartStation = () => {
 
 
     return (
-        <div className=''>
+        <div className='chartStationPage'
+        // onClick={() => setHideNotifications(false)}
+        >
 
             <SideNavBar />
 
@@ -225,13 +232,14 @@ const ChartStation = () => {
                     <h1 className='chartTitle'>{stationInfo?.alias}</h1>
 
 
-                    {!allRegisters.length > 0 &&
+                    {/* {!allRegisters.length > 0 &&
                         <button
                             className='navButton'
                             onClick={() => getAllRegisters()}
                             disabled={download && fetching}
                         >Obtener todos los datos <PiMicrosoftExcelLogo /></button>
                     }
+
                     {allRegisters.length > 0 &&
                         <ExportToExcel
                             apiData={csv}
@@ -249,11 +257,24 @@ const ChartStation = () => {
                         // >
                         //     Descargar CSV
                         // </CSVLink>
-                    }
+                    } */}
 
-                    <BsFillGearFill
 
-                        fontSize={'2rem'} />
+                    <div className="navbar_header_right"
+                    // onMouseLeave={() => setHideNotifications(false)}
+                    >
+                        <div className="navbar_header_notificationBx">
+                            <div className='navbar_header_notificationBx_numberContainer'>
+                                <span>1</span>
+                            </div>
+                            <MdNotificationsActive fontSize={'3.5rem'}
+                                onClick={() => setHideNotifications(!hideNotifications)}
+                            />
+                            {hideNotifications && <NotificationsHeader />}
+                        </div>
+                    </div>
+
+
 
                 </div>
 
@@ -274,97 +295,101 @@ const ChartStation = () => {
 
             </div>
 
+            <div className="chartStationBody">
 
-            <div className="dateContainer">
-                <div className="dateField">
-                    <label htmlFor="">Desde:</label>
-                    <input type="date"
-                        value={from}
-                        onChange={(e) => handleFromTo(e.target.value, 'from')}
+
+                <div className="dateContainer">
+                    <div className="dateField">
+                        <label htmlFor="">Desde:</label>
+                        <input type="date"
+                            value={from}
+                            onChange={(e) => handleFromTo(e.target.value, 'from')}
+                        />
+                    </div>
+                    <div className="dateField">
+                        <label htmlFor="">Hasta:</label>
+                        <input type="date"
+                            value={to}
+                            onChange={(e) => handleFromTo(e.target.value, 'to')}
+                        />
+                    </div>
+
+                    {/* <button onClick={() => cont.value++} >hola: {cont}</button> */}
+
+                </div>
+
+                <div className="indicatorsContainer">
+
+                    <IndicatorCard
+                        type={'temp'}
+                        value={itemInfo ? itemInfo?.temp : 0}
+                        status={1}
+                        min={stationInfo?.tempRange.min}
+                        max={stationInfo?.tempRange.max}
+                        payload={payload}
+                        stationInfo={stationInfo}
                     />
-                </div>
-                <div className="dateField">
-                    <label htmlFor="">Hasta:</label>
-                    <input type="date"
-                        value={to}
-                        onChange={(e) => handleFromTo(e.target.value, 'to')}
+                    <IndicatorCard
+                        type={'hum'}
+                        value={itemInfo ? itemInfo?.hum : 0}
+                        status={1}
+                        min={stationInfo?.humRange.min}
+                        max={stationInfo?.humRange.max}
+                        payload={payload}
+                        stationInfo={stationInfo}
                     />
-                </div>
-
-                {/* <button onClick={() => cont.value++} >hola: {cont}</button> */}
-
-            </div>
-
-            <div className="indicatorsContainer">
-
-                <IndicatorCard
-                    type={'temp'}
-                    value={itemInfo ? itemInfo?.temp : 0}
-                    status={1}
-                    min={stationInfo?.tempRange.min}
-                    max={stationInfo?.tempRange.max}
-                    payload={payload}
-                    stationInfo={stationInfo}
-                />
-                <IndicatorCard
-                    type={'hum'}
-                    value={itemInfo ? itemInfo?.hum : 0}
-                    status={1}
-                    min={stationInfo?.humRange.min}
-                    max={stationInfo?.humRange.max}
-                    payload={payload}
-                    stationInfo={stationInfo}
-                />
-
-            </div>
-            {/* <h1 className='chartTitle'>{stationInfo?.alias}</h1> */}
-
-            <div className="chartsContainer">
-
-                <div className="chartContainer">
-                    <h3>Temperatura</h3>
-                    <span className='y_axisLabel'>Temp °C</span>
-
-                    <LineChart width={800} height={300} data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }} >
-                        <Line type="monotone" dataKey="t"
-                            stroke={config.styles.linecolor}
-                            strokeWidth={config.styles.linewidth}
-                            animationDuration={500}
-                        />
-                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                        <XAxis dataKey={rangeType === 'hour' ? 'time' : 'date'} />
-                        <YAxis dataKey={"t"} />
-                        <Tooltip animationDuration={200}
-                            itemStyle={options}
-                            contentStyle={options}
-                        />
-                    </LineChart>
-
-                    <div className='x_axisLabel'>Hora</div>
-                </div>
-
-                <div className="chartContainer">
-                    <h3>Humedad</h3>
-                    <span className='y_axisLabel'>humedad%</span>
-                    <LineChart width={800} height={300} data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                        <Line type="monotone" dataKey="h"
-                            stroke={config.styles.linecolor}
-                            strokeWidth={config.styles.linewidth}
-                            animationDuration={500}
-                        />
-                        <CartesianGrid stroke="#ccc" strokeDasharray="10 10" />
-                        <XAxis dataKey={rangeType === 'hour' ? 'time' : 'date'} />
-                        <YAxis dataKey={"h"} />
-                        <Tooltip animationDuration={200}
-                            itemStyle={options}
-                            contentStyle={options}
-                        />
-                    </LineChart>
-                    <div className='x_axisLabel'>Hora</div>
 
                 </div>
+                {/* <h1 className='chartTitle'>{stationInfo?.alias}</h1> */}
 
+                <div className="chartsContainer">
+
+                    <div className="chartContainer">
+                        <h3>Temperatura</h3>
+                        <span className='y_axisLabel'>Temp °C</span>
+
+                        <LineChart width={800} height={300} data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }} >
+                            <Line type="monotone" dataKey="t"
+                                stroke={config.styles.linecolor}
+                                strokeWidth={config.styles.linewidth}
+                                animationDuration={500}
+                            />
+                            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                            <XAxis dataKey={rangeType === 'hour' ? 'time' : 'date'} />
+                            <YAxis dataKey={"t"} />
+                            <Tooltip animationDuration={200}
+                                itemStyle={options}
+                                contentStyle={options}
+                            />
+                        </LineChart>
+
+                        <div className='x_axisLabel'>Hora</div>
+                    </div>
+
+                    <div className="chartContainer">
+                        <h3>Humedad</h3>
+                        <span className='y_axisLabel'>humedad%</span>
+                        <LineChart width={800} height={300} data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                            <Line type="monotone" dataKey="h"
+                                stroke={config.styles.linecolor}
+                                strokeWidth={config.styles.linewidth}
+                                animationDuration={500}
+                            />
+                            <CartesianGrid stroke="#ccc" strokeDasharray="10 10" />
+                            <XAxis dataKey={rangeType === 'hour' ? 'time' : 'date'} />
+                            <YAxis dataKey={"h"} />
+                            <Tooltip animationDuration={200}
+                                itemStyle={options}
+                                contentStyle={options}
+                            />
+                        </LineChart>
+                        <div className='x_axisLabel'>Hora</div>
+
+                    </div>
+
+                </div>
             </div>
+
 
         </div>
     )

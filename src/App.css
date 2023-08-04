@@ -1,5 +1,6 @@
 #root {
-  max-width: 1280px;
+  /* max-width: 1280px; */
+  width: 100%;
   margin: 0 0;
   padding: 0;
 
@@ -174,11 +175,29 @@ body {
 
 /* ------charts page -------- */
 
+
+.chartStationPage {
+  width: 100%;
+  /* background-color: #1d508a; */
+}
+
+
+.chartStationBody {
+  width: 100%;
+  /* padding: 0 rem; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
 .navBarContainer {
   display: flex;
   flex-direction: column;
   /* gap: 0.5rem; */
   background-color: #555555;
+  width: 100%;
+  padding: 0 8rem;
 }
 
 .navBarContainer_header {
@@ -191,7 +210,95 @@ body {
   padding-bottom: 0;
 }
 
-.navBarContainer_body{
+.navbar_header_right {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 2rem;
+}
+
+.navbar_header_notificationBx {
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+}
+
+.navbar_header_notificationBx_numberContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 1.3rem;
+  width: 1.3rem;
+  padding: 2px;
+  border-radius: 100%;
+  background: rgba(245, 52, 4, 0.9);
+  border: 1px solid #bbb;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notificationsHeaderContainer {
+  position: absolute;
+  width: 20rem;
+  left: -9rem;
+  background-color: #343434;
+  padding: 0.5rem;
+  border-radius: 8px;
+  height: fit-content;
+  align-items: center;
+  text-align: center;
+}
+
+.notificationsContainer {
+  font-size: 1.2rem;
+  line-height: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 0;
+}
+
+
+.notificationBx {
+  cursor: pointer;
+  border: 1px solid transparent;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* padding-inline: 0.5rem; */
+}
+
+.notificationTitle:hover {
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  padding: 0.5rem 0;
+}
+
+.notificationTitle {
+  padding: 0.5rem 0;
+  border: 1px solid transparent;
+}
+
+.notificationInfo {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  text-align: justify;
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--fondoDatos);
+  border-radius: 8px;
+  box-shadow: 0 0 5px 2px #1d508a;
+}
+
+
+.navBarContainer_body {
   display: flex;
   flex-direction: row;
   gap: 4rem;
@@ -199,7 +306,7 @@ body {
   /* background-color: #1d508a; */
   justify-content: center;
   opacity: 0.6;
-  padding-bottom: 0.5rem;
+  /* padding-bottom: ; */
 }
 
 .navButton {
@@ -383,6 +490,9 @@ body {
   position: fixed;
   left: 0;
   top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
   padding: 1rem;
   padding-top: 2rem;
   background-color: #1d508a;
@@ -391,6 +501,19 @@ body {
   z-index: 3;
 }
 
+.sideBar_iconBox {
+  padding: 1rem;
+  border: 2px solid transparent;
+  border-radius: 16px;
+}
+
+.sidenavbar>div {
+  cursor: pointer;
+}
+
+.sidenavbar>div:hover {
+  background-color: var(--fondoHover);
+}
 
 .sidenavbar_devicesContainer {
   display: flex;
@@ -430,4 +553,75 @@ body {
 
   border-bottom: 2px solid #bbb;
   transition: border 0.2s ease;
+}
+
+
+
+/* ======= CONFIGS PAGE ==========*/
+
+.configsPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.congig_devicesContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.deviceConfigBx {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border: 2px solid #bbb;
+  border-radius: 8px;
+  width: 300px;
+  height: fit-content;
+  align-items: center;
+}
+
+
+.fieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldRow {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+}
+
+.fieldLabel {
+  color: #888;
+  line-height: 1.1rem;
+}
+
+.fieldInput {
+  font-size: 1.2rem;
+  padding: 0.2rem 0.4rem;
+  width: 100%;
+}
+
+.btnSave {
+  border: 1px solid transparent;
+  background-color: #20810c;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--colorLinea);
+  border-radius: 0.5rem;
 }
