@@ -60,6 +60,7 @@ const ChartStation = () => {
     const [from, setFrom] = useState(formatDate(new Date()))
     const [to, setTo] = useState(formatDate(new Date()))
     const [rangeType, setRangeType] = useState('day')
+    const [ping, setPing] = useState(false)
 
     const { mqttSubscribe, isConnected, payload } = useMqtt();
     const [notificationList, setNotificationList] = useState([]);
@@ -179,16 +180,19 @@ const ChartStation = () => {
     useEffect(() => {
         if (isConnected) {
             mqttSubscribe('miracleF01/devices');
+            mqttSubscribe('miracleF01/ping');
         }
     }, [isConnected]);
 
     useEffect(() => {
         if (payload.message
-            && ['miracleF01/devices'].includes(payload.topic)
+            // && ['miracleF01/devices'].includes(payload.topic)
+            // && ['miracleF01/ping'].includes(payload.topic)
         ) {
             // const newMessage = JSON.parse(payload.message);
             const newMessage = payload.message;
             console.log(newMessage)
+            if (newMessage === 'ping') setPing(!ping)
             // alert('new date')
             // const jsplit = newMessage.split('|')
             // // { "station": "ESP1", "values": { "H": 74.2, "T": 25.5 }, "createdAt": new Date() }
@@ -260,19 +264,20 @@ const ChartStation = () => {
                     } */}
 
 
-                    <div className="navbar_header_right"
+                    {/* <div className="navbar_header_right"
                     // onMouseLeave={() => setHideNotifications(false)}
                     >
                         <div className="navbar_header_notificationBx">
                             <div className='navbar_header_notificationBx_numberContainer'>
                                 <span>1</span>
                             </div>
+                            {ping && <div className="" style={{ borderRadius: '50%', width: '10px', height: '10px', background: '#0f0' }}></div>}
                             <MdNotificationsActive fontSize={'3.5rem'}
                                 onClick={() => setHideNotifications(!hideNotifications)}
                             />
                             {hideNotifications && <NotificationsHeader />}
                         </div>
-                    </div>
+                    </div> */}
 
 
 
