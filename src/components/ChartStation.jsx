@@ -20,6 +20,7 @@ import NotificationsHeader from './NotificationsHeader'
 const ChartStation = () => {
 
     const cont = signal(0)
+    const clickCont = signal(0)
 
     const { station } = useParams()
     console.log(station)
@@ -142,8 +143,35 @@ const ChartStation = () => {
 
     }
 
+
+    const handleDeletePoint = (pointPay) => {
+        const point = pointPay[0].payload
+        console.log(point)
+        clickCont.value += 1;
+        setTimeout(() => {
+            clickCont.value = 0;
+            console.log(clickCont.value)
+        }, 150);
+        console.log(clickCont.value)
+        if (clickCont.value == 2) {
+            if (confirm(`Desea eliminar este registro? > ${JSON.stringify(point)}`)) {
+                // console.log('Registro eliminado correctamente')
+                const url = config.db.baseurl + 'registers/delete/' + point.id
+                console.log(url)
+                axios.delete(url)
+                    .then(response => {
+                        console.log(response.data)
+                        alert('Registro eliminado correctamente')
+                        getRegistersRange(from, to)
+                    })
+                    .catch(err => console.log(err))
+            }
+        }
+    }
+
+
     const formatData = (data) => {
-        let dataformat = data?.map((reg, index) => ({ date: reg.date, time: reg.time, t: reg.temp, h: reg.hum }))
+        let dataformat = data?.map((reg, index) => ({ id: reg.id, date: reg.date, time: reg.time, t: reg.temp, h: reg.hum }))
         return dataformat
     }
     const formatCsv = (data) => {
@@ -353,13 +381,16 @@ const ChartStation = () => {
                         <h3>Temperatura</h3>
                         <span className='y_axisLabel'>Temp °C</span>
 
-                        <LineChart width={800} height={300} data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }} >
+                        <LineChart width={800} height={300} data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+                            onClick={(e) => handleDeletePoint(e?.activePayload)}
+                        >
                             <Line type="monotone" dataKey="t"
                                 stroke={config.styles.linecolor}
                                 strokeWidth={config.styles.linewidth}
                                 animationDuration={500}
                             />
                             <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+
                             <XAxis dataKey={rangeType === 'hour' ? 'time' : 'date'} />
                             <YAxis dataKey={"t"} />
                             <Tooltip animationDuration={200}
