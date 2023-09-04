@@ -183,11 +183,7 @@ const ChartStation = () => {
                 id: reg.id,
                 date: reg.date,
                 time: reg.time,
-                t: {
-                    [0]: reg.temp + Math.random(),
-                    [1]: reg.temp + Math.random() * 4,
-                    [2]: reg.temp + Math.random() * 4,
-                },
+                t: reg.temp,
                 h: reg.hum
             }))
         return dataformat
@@ -214,10 +210,10 @@ const ChartStation = () => {
         getRegistersRange(from, to)
     }, [from, to])
 
-    // useEffect(() => {
-    //     setData(formatData(registers))
-    //     console.log('first')
-    // }, [registers])
+    useEffect(() => {
+        setData(formatData(registers))
+        // console.log('first')
+    }, [registers])
 
     useEffect(() => {
         setCsv(formatCsv(allRegisters))
@@ -263,7 +259,7 @@ const ChartStation = () => {
         // onClick={() => setHideNotifications(false)}
         >
 
-            {/* <SideNavBar /> */}
+            <SideNavBar />
 
             <div className="navBarContainer">
                 <div className="navBarContainer_header">
@@ -282,7 +278,7 @@ const ChartStation = () => {
                 disabled={download && fetching}
             >Actualizar</button> */}
 
-                    {/* <h1 className='chartTitle'>{stationInfo?.alias}</h1> */}
+                    <h1 className='chartTitle'>{stationInfo?.alias}</h1>
 
 
                     {/* {!allRegisters.length > 0 &&
@@ -313,7 +309,7 @@ const ChartStation = () => {
                     } */}
 
 
-                    {/* <div className="navbar_header_right"
+                    <div className="navbar_header_right"
                     // onMouseLeave={() => setHideNotifications(false)}
                     >
                         <div className="navbar_header_notificationBx">
@@ -326,13 +322,13 @@ const ChartStation = () => {
                             />
                             {hideNotifications && <NotificationsHeader />}
                         </div>
-                    </div> */}
+                    </div>
 
 
 
                 </div>
 
-                {/* <div className="navBarContainer_body">
+                <div className="navBarContainer_body">
                     <div className="">
                         <span className="bodyStationCard_label">Id: </span>
                         <span className="bodyStationCard_text">{stationInfo?.title}</span>
@@ -345,7 +341,7 @@ const ChartStation = () => {
                         <span className="bodyStationCard_label">Flor: </span>
                         <span className="bodyStationCard_text">{stationInfo?.flowername}</span>
                     </div>
-                </div> */}
+                </div>
 
             </div>
 
@@ -394,12 +390,13 @@ const ChartStation = () => {
                     />
 
                 </div>
+
                 {/* <h1 className='chartTitle'>{stationInfo?.alias}</h1> */}
 
                 <div className="chartsContainer">
 
                     <div className="chartContainer"
-                        style={{ background: '#ddd1d1' }}
+                        // style={{ background: '#ddd1d1' }}
                     >
                         <h3>Temperatura</h3>
                         <span className='y_axisLabel'>Temp °C</span>
@@ -411,18 +408,8 @@ const ChartStation = () => {
                             margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
                             onClick={(e) => handleDeletePoint(e?.activePayload)}
                         >
-                            <Line type="monotone" dataKey="t.1"
+                            <Line type="monotone" dataKey="t"
                                 stroke={config.styles.linecolor1}
-                                strokeWidth={config.styles.linewidth}
-                                animationDuration={500}
-                            />
-                            <Line type="monotone" dataKey="t.2"
-                                stroke={config.styles.linecolor2}
-                                strokeWidth={config.styles.linewidth}
-                                animationDuration={500}
-                            />
-                            <Line type="monotone" dataKey="t.3"
-                                stroke={config.styles.linecolor3}
                                 strokeWidth={config.styles.linewidth}
                                 animationDuration={500}
                             />
@@ -445,7 +432,7 @@ const ChartStation = () => {
                         <span className='y_axisLabel'>humedad%</span>
                         <LineChart width={800} height={300} data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                             <Line type="monotone" dataKey="h"
-                                stroke={config.styles.linecolor}
+                                stroke={config.styles.linecolor1}
                                 strokeWidth={config.styles.linewidth}
                                 animationDuration={500}
                             />
