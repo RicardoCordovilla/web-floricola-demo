@@ -107,13 +107,13 @@ const ChartStation = () => {
             .then(response => {
                 console.log(response.data)
                 setRegisters(response.data)
-                setData([...data, ...formatData(response.data, i)])
+                setData([...data, ...formatData(response.data)])
                 console.log(data)
                 setRangeType(response.data[0].type)
                 console.log(response.data[0].type)
                 setFetching(false)
             })
-            .catch(err => console.log(err.data))
+            .catch(err => console.log(err))
 
         // }
     }
@@ -176,8 +176,7 @@ const ChartStation = () => {
     }
 
 
-    const formatData = (data, station) => {
-        console.log(station)
+    const formatData = (data) => {
         let dataformat = data?.map((reg, index) => (
             {
                 id: reg.id,
