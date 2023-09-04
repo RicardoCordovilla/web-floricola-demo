@@ -97,25 +97,25 @@ const ChartStation = () => {
     const getRegistersRange = (from, to) => {
         // console.log(from)
 
-        for (let i = 1; i < 2; i++) {
-            let url = config.db.baseurl + 'registers/' + 'ESP' + i + '/date?'
-                + 'from=' + from
-                + '&to=' + to
-            console.log(url)
-            setFetching(true)
-            axios.get(url)
-                .then(response => {
-                    console.log(response.data)
-                    setRegisters(response.data)
-                    setData([...data, ...formatData(response.data, i)])
-                    console.log(data)
-                    setRangeType(response.data[0].type)
-                    console.log(response.data[0].type)
-                    setFetching(false)
-                })
-                .catch(err => console.log(err.data))
+        // for (let i = 1; i < 2; i++) {
+        let url = config.db.baseurl + 'registers/' + station + '/date?'
+            + 'from=' + from
+            + '&to=' + to
+        console.log(url)
+        setFetching(true)
+        axios.get(url)
+            .then(response => {
+                console.log(response.data)
+                setRegisters(response.data)
+                setData([...data, ...formatData(response.data, i)])
+                console.log(data)
+                setRangeType(response.data[0].type)
+                console.log(response.data[0].type)
+                setFetching(false)
+            })
+            .catch(err => console.log(err.data))
 
-        }
+        // }
     }
 
     const getAllRegisters = () => {
@@ -396,7 +396,7 @@ const ChartStation = () => {
                 <div className="chartsContainer">
 
                     <div className="chartContainer"
-                        // style={{ background: '#ddd1d1' }}
+                    // style={{ background: '#ddd1d1' }}
                     >
                         <h3>Temperatura</h3>
                         <span className='y_axisLabel'>Temp °C</span>
