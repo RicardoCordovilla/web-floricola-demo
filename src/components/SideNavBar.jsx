@@ -72,7 +72,7 @@ const SideNavBar = () => {
 
                     <div
                         className="sidenavbar_devicesContainer_deviceBox"
-                        onClick={() => handleNavigate('/ESP3')}
+                        onClick={() => handleNavigate('/ESP3', true)}
                     >
 
                         <TbPhotoSensor3 />

@@ -55,7 +55,7 @@ const ChartStation = () => {
     const [registers, setRegisters] = useState()
     const [allRegisters, setAllRegisters] = useState([])
     const [csv, setCsv] = useState([])
-    const [data, setData] = useState()
+    const [data, setData] = useState([])
     const [download, setDownload] = useState(false)
     const [fetching, setFetching] = useState(false)
     const [from, setFrom] = useState(formatDate(new Date()))
@@ -95,21 +95,27 @@ const ChartStation = () => {
 
 
     const getRegistersRange = (from, to) => {
-        console.log(from)
-        let url = config.db.baseurl + 'registers/' + station + '/date?'
-            + 'from=' + from
-            + '&to=' + to
-        console.log(url)
-        setFetching(true)
-        axios.get(url)
-            .then(response => {
-                console.log(response.data)
-                setRegisters(response.data)
-                setRangeType(response.data[0].type)
-                console.log(response.data[0].type)
-                setFetching(false)
-            })
-            .catch(err => console.log(err.data))
+        // console.log(from)
+
+        for (let i = 1; i < 2; i++) {
+            let url = config.db.baseurl + 'registers/' + 'ESP' + i + '/date?'
+                + 'from=' + from
+                + '&to=' + to
+            console.log(url)
+            setFetching(true)
+            axios.get(url)
+                .then(response => {
+                    console.log(response.data)
+                    setRegisters(response.data)
+                    setData([...data, ...formatData(response.data, i)])
+                    console.log(data)
+                    setRangeType(response.data[0].type)
+                    console.log(response.data[0].type)
+                    setFetching(false)
+                })
+                .catch(err => console.log(err.data))
+
+        }
     }
 
     const getAllRegisters = () => {
@@ -170,8 +176,20 @@ const ChartStation = () => {
     }
 
 
-    const formatData = (data) => {
-        let dataformat = data?.map((reg, index) => ({ id: reg.id, date: reg.date, time: reg.time, t: reg.temp, h: reg.hum }))
+    const formatData = (data, station) => {
+        console.log(station)
+        let dataformat = data?.map((reg, index) => (
+            {
+                id: reg.id,
+                date: reg.date,
+                time: reg.time,
+                t: {
+                    [0]: reg.temp + Math.random(),
+                    [1]: reg.temp + Math.random() * 4,
+                    [2]: reg.temp + Math.random() * 4,
+                },
+                h: reg.hum
+            }))
         return dataformat
     }
     const formatCsv = (data) => {
@@ -196,9 +214,10 @@ const ChartStation = () => {
         getRegistersRange(from, to)
     }, [from, to])
 
-    useEffect(() => {
-        setData(formatData(registers))
-    }, [registers])
+    // useEffect(() => {
+    //     setData(formatData(registers))
+    //     console.log('first')
+    // }, [registers])
 
     useEffect(() => {
         setCsv(formatCsv(allRegisters))
@@ -244,7 +263,7 @@ const ChartStation = () => {
         // onClick={() => setHideNotifications(false)}
         >
 
-            <SideNavBar />
+            {/* <SideNavBar /> */}
 
             <div className="navBarContainer">
                 <div className="navBarContainer_header">
@@ -255,13 +274,15 @@ const ChartStation = () => {
                         disabled={download && fetching}
                     > <BiHome />Inicio</button>
 
+
+
                     {/* <button
                 className='HomeButton'
                 onClick={() => getRegistersRange(from, to)}
                 disabled={download && fetching}
             >Actualizar</button> */}
 
-                    <h1 className='chartTitle'>{stationInfo?.alias}</h1>
+                    {/* <h1 className='chartTitle'>{stationInfo?.alias}</h1> */}
 
 
                     {/* {!allRegisters.length > 0 &&
@@ -311,7 +332,7 @@ const ChartStation = () => {
 
                 </div>
 
-                <div className="navBarContainer_body">
+                {/* <div className="navBarContainer_body">
                     <div className="">
                         <span className="bodyStationCard_label">Id: </span>
                         <span className="bodyStationCard_text">{stationInfo?.title}</span>
@@ -324,7 +345,7 @@ const ChartStation = () => {
                         <span className="bodyStationCard_label">Flor: </span>
                         <span className="bodyStationCard_text">{stationInfo?.flowername}</span>
                     </div>
-                </div>
+                </div> */}
 
             </div>
 
@@ -377,22 +398,39 @@ const ChartStation = () => {
 
                 <div className="chartsContainer">
 
-                    <div className="chartContainer">
+                    <div className="chartContainer"
+                        style={{ background: '#ddd1d1' }}
+                    >
                         <h3>Temperatura</h3>
                         <span className='y_axisLabel'>Temp °C</span>
 
-                        <LineChart width={800} height={300} data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+                        <LineChart
+                            width={800}
+                            height={300}
+                            data={data}
+                            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
                             onClick={(e) => handleDeletePoint(e?.activePayload)}
                         >
-                            <Line type="monotone" dataKey="t"
-                                stroke={config.styles.linecolor}
+                            <Line type="monotone" dataKey="t.1"
+                                stroke={config.styles.linecolor1}
                                 strokeWidth={config.styles.linewidth}
                                 animationDuration={500}
                             />
-                            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                            <Line type="monotone" dataKey="t.2"
+                                stroke={config.styles.linecolor2}
+                                strokeWidth={config.styles.linewidth}
+                                animationDuration={500}
+                            />
+                            <Line type="monotone" dataKey="t.3"
+                                stroke={config.styles.linecolor3}
+                                strokeWidth={config.styles.linewidth}
+                                animationDuration={500}
+                            />
+                            <CartesianGrid stroke="#5f5a5abb" strokeDasharray="5 5" />
 
                             <XAxis dataKey={rangeType === 'hour' ? 'time' : 'date'} />
-                            <YAxis dataKey={"t"} />
+                            {/* <YAxis dataKey={"t"} /> */}
+                            <YAxis dataKey={"h"} />
                             <Tooltip animationDuration={200}
                                 itemStyle={options}
                                 contentStyle={options}

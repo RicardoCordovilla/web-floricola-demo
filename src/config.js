@@ -9,8 +9,10 @@ export const config = {
     },
 
     styles: {
-        linecolor: "#bbb",
-        chartbackcolor: "#c8ecfa",
-        linewidth: 2
+        linecolor1: "#f55",
+        linecolor2: "#55f",
+        linecolor3: "#5f5",
+        chartbackcolor: "#222",
+        linewidth: 3
     }
 }
